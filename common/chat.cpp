@@ -1899,6 +1899,17 @@ static common_chat_params common_chat_params_init_kimi_k2(const common_chat_temp
     data.prompt = apply(tmpl, params);
     data.format = COMMON_CHAT_FORMAT_KIMI_K2;
 
+    // Handle thinking tags based on prompt ending
+    if (string_ends_with(data.prompt, "<think>") || string_ends_with(data.prompt, "<think>\n")) {
+        if (!params.enable_thinking) {
+            // Close the thinking tag immediately if thinking is disabled
+            data.prompt += "</think>";
+        } else {
+            // Mark thinking as forced open (template started with <think>)
+            data.thinking_forced_open = true;
+        }
+    }
+
     data.preserved_tokens = {
         "<think>",
         "</think>",
